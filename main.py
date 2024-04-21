@@ -1,14 +1,9 @@
 import praw
 import re
 import pathlib
-from pathlib import Path
 import urllib.parse
-from urllib.request import Request
-from urllib.error import HTTPError
 import ffmpeg
-from ffmpeg import Error as FFmpegError
 import json
-
 
 # Target subreddit
 
