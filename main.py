@@ -6,55 +6,49 @@ import ffmpeg
 import json
 
 # Target subreddit
-
 target_subreddit = ""
 
 # Specify if 'best,' 'hot,' 'new,' 'rising,' 'controversial,' 'top,' 'gilded,' 'wiki'
-
 target_type = "top"
 
 # Specify limit
-
 number = "100"
 
 # Specify destination of scraped data
-
 path = str(pathlib.Path(__file__).resolve().parent) + '//output//'
 
     
-    
-
 reddit = praw.Reddit(client_id = '', client_secret ='', user_agent ='')
 
-def Scrape():
+def scrape():
 
-    entry = {}
+    entries = {}
 
     for submission in reddit.subreddit(target_subreddit).top(limit=50000):
         video = re.search("^http(s)?://v\.redd\.it/\w+$", submission.url)
         image = re.search("^http(s)?://i\.redd\.it/\w+\.(png|gif|jpg|jpeg)$", submission.url)
         filetype = re.search("(png|gif|jpg|jpeg)", submission.url)
         if video:
-            entry[submission.id] = {
+            entries[submission.id] = {
                 "title" : submission.title,
                 "url" : submission.url,
                 "filename": submission.id + '.mp4'
             }
-            GetVideo(submission)
+            get_video(submission)
         if image:
-            entry[submission.id] = {
+            entries[submission.id] = {
                 "title" : submission.title,
                 "url" : submission.url,
                 "filename": submission.id + '.' + filetype.group()
             }
-            GetImage(submission, filetype)
+            get_image(submission, filetype)
         else:
             continue
 
     with open('entries.json', 'w') as outfile:
-        json.dump(entry, outfile, indent=4)        
+        json.dump(entries, outfile, indent=4)        
 
-def GetVideo(submission):
+def get_video(submission):
     if submission.secure_media['reddit_video']['dash_url']:
         try:
             stream = ffmpeg.input(submission.secure_media['reddit_video']['dash_url'])
@@ -65,9 +59,8 @@ def GetVideo(submission):
                 print('stderr:', error.stderr.decode('utf8'))
                 pass
 
-def GetImage(submission, filetype):
+def get_image(submission, filetype):
     urllib.request.urlretrieve(submission.url, path + submission.id + "." + filetype.group() )
 
 
-
-Scrape()
+scrape()
