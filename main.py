@@ -18,8 +18,13 @@ number = "100"
 path = str(pathlib.Path(__file__).resolve().parent) + '//output//'
 
     
-reddit = praw.Reddit(client_id = '', client_secret ='', user_agent ='')
-
+reddit = praw.Reddit(
+    client_id="",
+    client_secret="",
+    password="",
+    user_agent="",
+    username="",
+)
 def scrape():
 
     entries = {}
